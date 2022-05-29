@@ -4,6 +4,7 @@ const autoprefixer = require("gulp-autoprefixer");
 const csso = require("gulp-csso");
 const htmlmin = require("gulp-htmlmin");
 const browserSync = require("browser-sync").create();
+const del = require("del");
 
 const formatter = () => {
     return src("./src/*.{html,css,js}")
@@ -40,12 +41,18 @@ const server = () => {
     )
 }
 
+const clear = () => {
+    return del("./dist");
+}
+
 const watcher = () => {watch("./src/**/*.{html,css,js}", series(formatter, cssPrefix, css, html))}
 
 exports.dev = series(
+    clear,
     formatter,
     cssPrefix,
     css,
     html,
     parallel(watcher, server)
 );
+
