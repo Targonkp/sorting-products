@@ -5,6 +5,8 @@ const csso = require("gulp-csso");
 const htmlmin = require("gulp-htmlmin");
 const browserSync = require("browser-sync").create();
 const del = require("del");
+const terser = require("gulp-terser");
+const imagemin = require("gulp-imagemin");
 
 const formatter = () => {
     return src("./src/*.{html,css,js}")
@@ -31,6 +33,20 @@ const css = () => {
         .pipe(dest("./dist/mini-files"))
 }
 
+const js = () => {
+    return src("./dist/*.js")
+        .pipe(terser())
+        .pipe(dest("./dist/mini-files"))
+}
+
+const img = () => {
+    return src("./src/images/*{png,jpg,jpeg,gif,svg}")
+        .pipe(imagemin(
+            { verbose: true}
+        ))
+        .pipe(dest("./dist/images"))
+}
+
 const server = () => {
     browserSync.init(
         {
@@ -45,14 +61,18 @@ const clear = () => {
     return del("./dist");
 }
 
-const watcher = () => {watch("./src/**/*.{html,css,js}", series(formatter, cssPrefix, css, html))}
+const watcher = () => {watch("./src/**/*.{html,css,js}", series(formatter, cssPrefix, css, html, js, img))}
+
 
 exports.dev = series(
     clear,
     formatter,
     cssPrefix,
     css,
+    js,
     html,
+    img,
     parallel(watcher, server)
 );
 
+exports.img = img;

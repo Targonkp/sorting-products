@@ -1,19 +1,19 @@
 //база данных в виде массива объектов
 let tvlist = [
-    {model: 'ТВ-8', diagonal: '36 дюймов', price: '25000 рублей', dataSort: '8', dataRating: '20'},
-    {model: 'ТВ-1', diagonal: '32 дюйма', price: '23000 рублей', dataSort: '1', dataRating: '10'},
-    {model: 'ТВ-3', diagonal: '30 дюймов', price: '21000 рублей', dataSort: '3', dataRating: '15'},
-    {model: 'ТВ-5', diagonal: '23 дюйма', price: '15000 рублей', dataSort: '5', dataRating: '17'},
-    {model: 'ТВ-2', diagonal: '34 дюйма', price: '35500 рублей', dataSort: '2', dataRating: '45'},
-    {model: 'ТВ-6', diagonal: '55 дюймов', price: '54000 рублей', dataSort: '6', dataRating: '16'},
-    {model: 'ТВ-7', diagonal: '28 дюймов', price: '17501 рубль', dataSort: '7', dataRating: '7'},
-    {model: 'ТВ-9', diagonal: '26 дюймов', price: '17562 рубля', dataSort: '9', dataRating: '17'},
-    {model: 'ТВ-8', diagonal: '58 дюймов', price: '37800 рублей', dataSort: '8', dataRating: '8'},
-    {model: 'ТВ-10', diagonal: '26 дюймов', price: '12561 рубль', dataSort: '10', dataRating: '17'},
-    {model: 'ТВ-12', diagonal: '52 дюйма', price: '42800 рублей', dataSort: '12', dataRating: '3'},
-    {model: 'ТВ-11', diagonal: '28 дюймов', price: '18000 рублей', dataSort: '11', dataRating: '19'},
-    {model: 'ТВ-13', diagonal: '58 дюймов', price: '34700 рублей', dataSort: '13', dataRating: '48'},
-    {model: 'ТВ-14', diagonal: '35 дюймов', price: '22800 рублей', dataSort: '14', dataRating: '18'},
+    {model: 'ТВ-8', diagonal: '36 дюймов', price: '25000 рублей', dataSort: '8', dataRating: '20', image: 'images/tv-image-1.jpg'},
+    {model: 'ТВ-1', diagonal: '32 дюйма', price: '23000 рублей', dataSort: '1', dataRating: '10', image: 'images/tv-image-2.jpg'},
+    {model: 'ТВ-3', diagonal: '30 дюймов', price: '21000 рублей', dataSort: '3', dataRating: '15', image: 'images/tv-image-3.jpg'},
+    {model: 'ТВ-5', diagonal: '23 дюйма', price: '15000 рублей', dataSort: '5', dataRating: '17', image: 'images/tv-image-4.jpg'},
+    {model: 'ТВ-2', diagonal: '34 дюйма', price: '35500 рублей', dataSort: '2', dataRating: '45', image: 'images/tv-image-5.jpg'},
+    {model: 'ТВ-6', diagonal: '55 дюймов', price: '54000 рублей', dataSort: '6', dataRating: '16', image: 'images/tv-image-1.jpg'},
+    {model: 'ТВ-7', diagonal: '28 дюймов', price: '17501 рубль', dataSort: '7', dataRating: '7', image: 'images/tv-image-2.jpg'},
+    {model: 'ТВ-9', diagonal: '26 дюймов', price: '17562 рубля', dataSort: '9', dataRating: '17', image: 'images/tv-image-3.jpg'},
+    {model: 'ТВ-8', diagonal: '58 дюймов', price: '37800 рублей', dataSort: '8', dataRating: '8', image: 'images/tv-image-4.jpg'},
+    {model: 'ТВ-10', diagonal: '26 дюймов', price: '12561 рубль', dataSort: '10', dataRating: '17', image: 'images/tv-image-5.jpg'},
+    {model: 'ТВ-12', diagonal: '52 дюйма', price: '42800 рублей', dataSort: '12', dataRating: '3', image: 'images/tv-image-1.jpg'},
+    {model: 'ТВ-11', diagonal: '28 дюймов', price: '18000 рублей', dataSort: '11', dataRating: '19', image: 'images/tv-image-2.jpg'},
+    {model: 'ТВ-13', diagonal: '58 дюймов', price: '34700 рублей', dataSort: '13', dataRating: '48', image: 'images/tv-image-3.jpg'},
+    {model: 'ТВ-14', diagonal: '35 дюймов', price: '22800 рублей', dataSort: '14', dataRating: '18', image: 'images/tv-image-4.jpg'},
 ]
 
 
@@ -69,10 +69,15 @@ function newPage(productsList) {
     for (let key in productsList){
         let productEl = document.createElement('div'); //создаю новый товар
         productEl.innerHTML = `
+        <div class="product-image">
+        <img src="${productsList[key].image}" alt="" class="products-text__image"> 
+        </div>     
+        <div class="product-info">
         <p class="products-text__header">Название модели: ${productsList[key].model}</p>
     <p>Диагональ: ${productsList[key].diagonal}</p>
-    <p>Стоимость: ${productsList[key].price}</p>
+    <p>Стоимость: ${productsList[key].price} &#8381;</p>
     <p>Рейтинг: ${productsList[key].dataRating}</p>
+    </div>
     `;
         productEl.className = 'products-text__element';
         productEl.setAttribute('data-sort', productsList[key].dataSort);
@@ -84,6 +89,7 @@ function newPage(productsList) {
 //"стартовая" функция, которая отображает товары сразу при загрузке страницы
 function startPage(end) {
     products.innerHTML = ''; //обнуляю отображаемые товары, иначе они будут прибавляться друг к другу
+    priceName();
     let newObj = tvlist.slice(0, end);
     newPage(newObj);
 }
