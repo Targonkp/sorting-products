@@ -16,7 +16,6 @@ let tvlist = [
     {model: 'ТВ-14', diagonal: '35 дюймов', price: '22800 рублей', dataSort: '14', dataRating: '18', image: 'images/tv-image-4.jpg', brand: 'Cbrand'},
 ]
 
-
 let products = document.querySelector('.products__text');
 let pagination = document.querySelector('.pagination');
 let sorting = document.querySelector('.sorting');
@@ -137,7 +136,6 @@ function sortAscending(arr) {
     //сортирую по цене
     arr.sort((a, b) => a.price - b.price); //сортирую текущий объект массивов
     newObj = arr.slice(0, notesOnPage); //получаю нужный кусок и присваиваю его новому объекту
-    console.log(newObj);
     newPage(newObj); //вывожу получившийся кусок на страницу
 }
 
@@ -147,7 +145,6 @@ function sortDescending(arr) {
     //сортирую по цене
     arr.sort((a, b) => b.price - a.price); //сортирую текущий объект массивов
     newObj = arr.slice(0, notesOnPage); //получаю нужный кусок и присваиваю его новому объекту
-    console.log(newObj);
     newPage(newObj); //вывожу получившийся кусок на страницу
 }
 
@@ -210,7 +207,7 @@ for (let i=0; i<newbrands.length; i++){
     brandElement.innerHTML =
         `
         <div class="checkbox">
-    <input class="custom-checkbox" type="checkbox" id="newbrands-${i}">
+    <input class="custom-checkbox" data-brandname="${newbrands[i]}" type="checkbox" id="newbrands-${i}">
     <label for="newbrands-${i}">${newbrands[i]}</label>
   </div>
         `
@@ -229,7 +226,7 @@ for (let i=0; i<newDiagonalsSort.length; i++){
     diagonalElement.innerHTML =
         `
         <div class="checkbox">
-    <input class="custom-checkbox" type="checkbox" id="diagonals-${i}">
+    <input class="custom-checkbox" data-diagonalsize="${newDiagonalsSort[i]}" type="checkbox" id="diagonals-${i}">
     <label for="diagonals-${i}">${newDiagonals[i]}</label>
   </div>
         `
@@ -246,69 +243,86 @@ for (let i=0; i<prices.length; i++){
     priceElement.innerHTML =
         `
         <div class="checkbox">
-    <input class="custom-checkbox" type="checkbox" id="prices-${i}">
+    <input class="custom-checkbox" data-price="${prices[i]}" type="checkbox" id="prices-${i}">
     <label for="prices-${i}">${prices[i]}</label>
   </div>
         `
     document.getElementById('filters-price').appendChild(priceElement);
 }
 
-//фильтрация товаров по чекбоксам "Бренды"
-document.getElementById('filters-brand').addEventListener(
-    'click',
-    (event) => {
-        if (event.target.tagName === 'LABEL'){
-            let filterBrand = event.target.textContent;
-            newElementsList = tvlist.filter(item => item.brand === filterBrand);
+document.querySelector('.filters__wrap').addEventListener(
+    'change',
+    function (event) {
+        //добавляю эффект загрузки
+        document.querySelector('.main-content').classList.add('main-content_loading');
+        //здесь возвращаю массив к исходной форме
+        newElementsList = tvlist;
+        //получаю список отмеченных элементов
+        let checkedArray = [...document.querySelectorAll('input[type="checkbox"]:checked')].length;
+
+
+        //получаю список всех чекбоксов с data-brandname и состоянием checked
+        let brands = [...document.querySelectorAll('[type="checkbox"][data-brandname]:checked')];
+        //получаю список всех чекбоксов с data-diagonalsize
+        let diagonals = [...document.querySelectorAll('[type="checkbox"][data-diagonalsize]:checked')];
+        //получаю список всех чекбоксов с data-diagonalsize
+        let prices = [...document.querySelectorAll('[type="checkbox"][data-price]:checked')];
+
+        //если длина массива с отмеченными элементами равна 0, то отображаю на странице товары из базового массива
+        if (checkedArray === 0){
+            createPaginationEl(newElementsList);
+            createProducts(1, newElementsList);
+        }
+        //если есть хоть один отмеченный чекбокс с data-price, то выполняю следующую функцию
+        else {
+            if (prices.length > 0){
+                prices.forEach(
+                 function (elem)
+                {
+                    //с помощью регулярного выражения получаю только цифры из price и присваиваю их двум переменным min и max
+                    [min, max] = elem.dataset.price.match(/\d+/g);
+                    //выполняю проверку, чтобы удалить у всех checked кроме элемента, по которому был совершен клик в блоке с ценами
+                   if (event.target.hasAttribute('data-price') && elem !== event.target){
+                       elem.checked = false;
+                   }
+                }
+                 );
+                newElementsList = newElementsList.filter(item => parseFloat(item.price) >= +min && parseFloat(item.price) <= +max);
+            }
+
+            //если есть хоть один отмеченный чекбокс с data-brandname, то выполняю следующую функцию
+            if (brands.length > 0) {
+                brands = brands.reduce(function (acc, brand) {
+                    acc.push(brand.dataset.brandname);
+                    return acc;
+                }, []);
+                newElementsList = newElementsList.filter(item => brands.includes(item.brand));
+            }
+            if (diagonals.length > 0){
+                diagonals = diagonals.reduce(
+                    function (acc, diagonal) {
+                        acc.push(parseFloat(diagonal.dataset.diagonalsize));
+                        return acc;
+                    }, []);
+                newElementsList = newElementsList.filter(item => diagonals.includes(parseFloat(item.diagonal)));
+            }
+
+        }
+
             console.log(newElementsList);
             createPaginationEl(newElementsList); //пагинация
-            createProducts(1, newElementsList); //отображение куска массива
-        }
+            createProducts(1, newElementsList);
+
+        //удаляю эффект загрузки
+
+        setTimeout(
+            () => {
+                document.querySelector('.main-content').classList.remove('main-content_loading');
+            },
+            500
+        );
     }
 )
-//фильтрация товаров по чекбоксам "Цена"
-document.getElementById('filters-price').addEventListener(
-    'click',
-    (event) => {
-        if (event.target.tagName === 'LABEL') {
-            let [min, max] = event.target.textContent.match(/\d+/g);
-            newElementsList = tvlist.filter(item => parseFloat(item.price) >= +min && parseFloat(item.price) <= +max);
-            createPaginationEl(newElementsList); //пагинация
-            createProducts(1, newElementsList); //отображение куска массива
-        }
-    }
-)
-
-//фильтрация товаров по чекбоксам "Диагональ"
-document.getElementById('filters-diagonal').addEventListener(
-    'click',
-    (event) => {
-        if (event.target.tagName === 'LABEL'){
-            let filterDiagonal = parseFloat(event.target.textContent);
-            newElementsList = tvlist.filter(item => parseFloat(item.diagonal) === filterDiagonal);
-            createPaginationEl(newElementsList); //пагинация
-            createProducts(1, newElementsList); //отображение куска массива
-        }
-    }
-)
-
-//получю список всех чекбоксов с состоянием checked
-let chekcbox = document.getElementById('filters-price').querySelectorAll('.custom-checkbox');
-function filter() {
-    let newArray = [];
-    [...chekcbox].forEach((elem) => {
-        if (elem.checked){
-            newArray.push(elem.closest(".checkbox").querySelector("label").textContent);
-        }
-    })
-    console.log(newArray);
-}
-
-document.getElementById('filters-price').addEventListener(
-    'change',
-    filter
-)
-
 
 //сброс всех фильтров с состоянием checked
 document.querySelector('.reset').addEventListener(

@@ -32,6 +32,7 @@ p{
         flex-direction: row;
     -ms-flex-pack: center;
         justify-content: center;
+    margin: 10px 0;
 }
 
 .products-sort__button{
@@ -93,7 +94,7 @@ p{
 }
 
 .products-text__element{
-    width: 32%;
+    width: calc(100%/3 - 10px);
     border: 1px solid #bbbbbb;
     border-radius: 8px;
     box-shadow: 5px 5px 5px #a5cd9e;
@@ -281,6 +282,26 @@ p{
         flex-direction: row;
     -ms-flex-align: start;
         align-items: flex-start;
+    position: relative;
+}
+
+.main-content:after{
+    content: '';
+    background: rgb(109, 159, 170, 0.3) url("images/loading.gif") center center / 70px no-repeat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.main-content.main-content_loading:after{
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: 0.3s;
+            transform: 0.3s;
 }
 
 .filters__wrap{
